@@ -19,7 +19,7 @@ export const defaultData = {
     "Dedicated and hardworking Computer Science undergraduate at North South University with a CGPA of 3.65/4.00, 121.5/130 credits completed, and a 50% merit scholarship. Skilled in full-stack development, machine learning, IoT, embedded systems, and database-driven applications, with 14+ academic and personal projects completed. Strong problem-solving, communication, leadership, and multitasking abilities developed through 3+ years of tutoring experience and active involvement in IEEE, ACM, NSUSS, and robotics-related activities.",
 
   stats: [
-    { value: "3.55", label: "CGPA / 4.00" },
+    { value: "3.65", label: "CGPA / 4.00" },
     { value: "14+", label: "Projects" },
     { value: "50%", label: "Merit Scholarship" },
     { value: "50+", label: "Students Mentored" },
@@ -42,7 +42,7 @@ export const defaultData = {
       points: [],
     },
     {
-      role: "Volunteer, Event Management Team Member",
+      role: "Team Volunteer - Finance And Corporate",
       org: "IEEE NSU Student Branch, NSU",
       period: "2025 – Present",
       points: [],
@@ -81,8 +81,8 @@ export const defaultData = {
     {
       school: "North South University",
       degree: "B.Sc. in Computer Science and Engineering",
-      detail: "CGPA: 3.55/4.00 · Credits: 121.5/130 · 50% merit scholarship holder · Final-year student",
-      period: "Jan 2023 – Present",
+      detail: "CGPA: 3.65/4.00 · 50% merit scholarship holder ",
+      period: "Jan 2023 – Aug 2026",
     },
     {
       school: "Notre Dame College",
@@ -109,11 +109,12 @@ export const defaultData = {
     { group: "Software Tools", items: ["GitHub", "MS Office", "Excel", "PowerPoint", "Canva", "Photoshop", "AutoCAD", "MailChimp", "Logisim", "Multisim", "Wireshark", "Figma"] },
     { group: "Digital Marketing", items: ["Email Marketing", "Facebook Marketing", "Data Entry"] },
     { group: "Soft Skills", items: ["Communication", "Public Speaking", "Teamwork", "Leadership", "Adaptability", "Event Management"] },
+    { group: "Driving Skills", items: ["Light Car", "Motor Bike"] },
   ],
 
   projects: [
     { name: "AI-Based Traffic Control & Congestion Monitoring", tech: "ML, IoT, RAG, Neural Networks", desc: "AI and IoT-based traffic control system using CRFT, neural networks, and RAG for congestion monitoring." },
-    { name: "AI Enhanced Fuel Pump Dispenser & Monitoring", tech: "CSE499A · Ongoing", desc: "AI-enhanced fuel pump dispenser and monitoring system focused on automation and operational tracking." },
+    { name: "AI Enhanced Fuel Pump Dispenser & Monitoring", tech: "CSE499 · Ongoing", desc: "AI-enhanced fuel pump dispenser and monitoring system focused on automation and operational tracking." },
     { name: "Q-ALBERT: Quantum-Enhanced Transformer", tech: "CSE465 · Ongoing", desc: "Research project exploring shared quantum attention for parameter-efficient transformer architecture." },
     { name: "Techshop327 – AI-Based PC Assistant Shop", tech: "Ollama, PHP, SQL, HTML, JS", desc: "AI-assisted PC shop using Ollama architecture with a PHP and SQL-based web system for intelligent assistance." },
     { name: "Khaboi-Khabo – Food Order Website", tech: "PHP, HTML, CSS, SQL, JS, PhpMailer", desc: "Full-stack food ordering website with database integration and email functionality.", link: "https://khaboikhabo.infy.uk" },
