@@ -230,6 +230,7 @@ export default function EditPanel({ data, setData, onClose, onReset }) {
               <div className="field"><label>Location</label><input value={draft.location} onChange={(e) => set("location", e.target.value)} /></div>
               <div className="field"><label>LinkedIn URL</label><input value={draft.linkedin} onChange={(e) => set("linkedin", e.target.value)} /></div>
               <div className="field"><label>GitHub URL</label><input value={draft.github} onChange={(e) => set("github", e.target.value)} /></div>
+              <div className="field"><label>Website URL</label><input value={draft.website || ""} onChange={(e) => set("website", e.target.value)} /></div>
               <div className="field"><label>Facebook URL</label><input value={draft.facebook || ""} onChange={(e) => set("facebook", e.target.value)} /></div>
               <div className="field"><label>Instagram URL</label><input value={draft.instagram || ""} onChange={(e) => set("instagram", e.target.value)} /></div>
               <div className="field"><label>LeetCode URL</label><input value={draft.leetcode || ""} onChange={(e) => set("leetcode", e.target.value)} /></div>

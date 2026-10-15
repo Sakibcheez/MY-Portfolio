@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   MapPin, Phone, Mail, Pencil, ExternalLink, ArrowUpRight,
   Menu, X, Code2, Globe, Database, Brain, Cpu, Monitor,
-  Smartphone, Wrench, Megaphone, Users,
+  Smartphone, Wrench, Megaphone, Users, Cloud,
 } from "lucide-react";
 import { defaultData } from "./data";
 import EditPanel from "./EditPanel";
@@ -27,7 +27,28 @@ function WhatsApp({ size = 14 }) {
   return (<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>);
 }
 
-const STORAGE_KEY = "portfolio-data-v1";
+const STORAGE_KEY = "portfolio-data-v3";
+const PREVIOUS_STORAGE_KEYS = ["portfolio-data-v2", "portfolio-data-v1"];
+
+function readPreviousPhoto() {
+  for (const key of PREVIOUS_STORAGE_KEYS) {
+    const previous = localStorage.getItem(key);
+    if (previous) {
+      const photo = JSON.parse(previous)?.photo;
+      if (photo) return photo;
+    }
+  }
+  return defaultData.photo;
+}
+
+function loadPortfolioData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    const savedData = JSON.parse(saved);
+    return { ...defaultData, ...savedData, photo: savedData.photo || defaultData.photo };
+  }
+  return { ...defaultData, photo: readPreviousPhoto() };
+}
 
 const reveal = {
   hidden: { opacity: 0, y: 28 },
@@ -84,7 +105,8 @@ const skillGroupIcons = {
   "AI / Machine Learning": Brain,
   "Embedded Systems / IoT": Cpu,
   "Operating Systems": Monitor,
-  "Mobile Development": Smartphone,
+  "Mobile Apps Development": Smartphone,
+  "DevOps & Cloud": Cloud,
   "Software Tools": Wrench,
   "Digital Marketing": Megaphone,
   "Soft Skills": Users,
@@ -104,6 +126,7 @@ function Navbar({ name }) {
     { href: "#about", label: "About" },
     { href: "#experience", label: "Experience" },
     { href: "#projects", label: "Projects" },
+    { href: "#research", label: "Research" },
     { href: "#skills", label: "Skills" },
     { href: "#education", label: "Education" },
     { href: "#awards", label: "Awards" },
@@ -130,26 +153,46 @@ function Navbar({ name }) {
 }
 
 export default function App() {
-  const [data, setDataState] = useState(defaultData);
+  const [data, setDataState] = useState(loadPortfolioData);
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setDataState({ ...defaultData, ...JSON.parse(saved) });
-    } catch {}
+      if (!localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(loadPortfolioData()));
+        for (const key of PREVIOUS_STORAGE_KEYS) localStorage.removeItem(key);
+      }
+    } catch (error) {
+      console.error("Failed to migrate saved portfolio data.", error);
+    }
   }, []);
 
   const setData = (d) => {
     setDataState(d);
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+    } catch (error) {
+      console.error("Failed to save portfolio data.", error);
+    }
   };
   const resetData = () => {
-    try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error("Failed to remove saved portfolio data.", error);
+    }
+    try {
+      for (const key of PREVIOUS_STORAGE_KEYS) localStorage.removeItem(key);
+    } catch (error) {
+      console.error("Failed to remove previous portfolio data.", error);
+    }
     setDataState(defaultData);
   };
 
   const initials = data.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
+  const summaryBreak = data.summary.indexOf(". ");
+  const summaryLead = summaryBreak < 0 ? data.summary : data.summary.slice(0, summaryBreak + 1);
+  const summaryDetails = summaryBreak < 0 ? "" : data.summary.slice(summaryBreak + 2);
 
   return (
     <>
@@ -174,6 +217,7 @@ export default function App() {
                 <span className="chip"><MapPin size={14} />{data.location}</span>
                 <a className="chip" href={data.linkedin} target="_blank" rel="noreferrer"><Linkedin size={14} />LinkedIn</a>
                 <a className="chip" href={data.github} target="_blank" rel="noreferrer"><Github size={14} />GitHub</a>
+                {data.website && <a className="chip" href={data.website} target="_blank" rel="noreferrer"><Globe size={14} />{data.website.replace(/^https?:\/\//, "")}</a>}
                 {data.facebook && <a className="chip" href={data.facebook} target="_blank" rel="noreferrer"><Facebook size={14} />Facebook</a>}
                 {data.instagram && <a className="chip" href={data.instagram} target="_blank" rel="noreferrer"><Instagram size={14} />Instagram</a>}
                 {data.leetcode && <a className="chip" href={data.leetcode} target="_blank" rel="noreferrer"><LeetCode size={14} />LeetCode</a>}
@@ -195,11 +239,9 @@ export default function App() {
 
       <Section num="01 — PROFILE" title="About" titleEm="me" id="about">
         <div className="summary-grid">
-          <Reveal i={1}><p className="summary-text">{data.summary.split(".")[0]}.</p></Reveal>
+          <Reveal i={1}><p className="summary-text">{summaryLead}</p></Reveal>
           <Reveal i={2}>
-            <p style={{ color: "var(--ink-soft)", marginBottom: 28 }}>
-              {data.summary.split(".").slice(1).join(".").trim()}
-            </p>
+            {summaryDetails && <p style={{ color: "var(--ink-soft)", marginBottom: 28 }}>{summaryDetails}</p>}
             <div className="stats">
               {data.stats.map((s, idx) => (
                 <div className="stat" key={idx}>
@@ -250,7 +292,22 @@ export default function App() {
         </div>
       </Section>
 
-      <Section num="04 — TOOLKIT" title="Skills &" titleEm="stack" id="skills">
+      <Section num="04 — RESEARCH" title="Research" id="research">
+        <div className="proj-grid">
+          {data.research.map((item, idx) => (
+            <Reveal i={idx} key={item.title}>
+              <article className="proj">
+                <h3>{item.title}</h3>
+                <div className="tech">{item.course}</div>
+                <p>{item.supervisor}</p>
+                <p>{item.department}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </Section>
+
+      <Section num="05 — TOOLKIT" title="Skills &" titleEm="stack" id="skills">
         {data.skills.map((g, idx) => {
           const Icon = skillGroupIcons[g.group];
           return (
@@ -269,7 +326,7 @@ export default function App() {
         })}
       </Section>
 
-      <Section num="05 — STUDY" title="Education" id="education">
+      <Section num="06 — STUDY" title="Education" id="education">
         <div className="timeline">
           {data.education.map((ed, idx) => (
             <Reveal i={idx} key={idx}>
@@ -284,7 +341,7 @@ export default function App() {
         </div>
       </Section>
 
-      <Section num="06 — RECOGNITION" title="Awards &" titleEm="certifications" id="awards">
+      <Section num="07 — RECOGNITION" title="Awards &" titleEm="certifications" id="awards">
         <div className="cols-2">
           <Reveal i={0}>
             <div className="listcard">
@@ -305,7 +362,7 @@ export default function App() {
         </div>
       </Section>
 
-      <Section num="07 — VOUCHED BY" title="References" id="references">
+      <Section num="08 — VOUCHED BY" title="References" id="references">
         <div className="cols-2">
           {data.references.map((r, idx) => (
             <Reveal i={idx} key={idx}>
@@ -332,6 +389,7 @@ export default function App() {
               {data.whatsapp && <a className="chip" href={data.whatsapp} target="_blank" rel="noreferrer"><WhatsApp size={14} />WhatsApp</a>}
               <a className="chip" href={data.linkedin} target="_blank" rel="noreferrer"><Linkedin size={14} />LinkedIn</a>
               <a className="chip" href={data.github} target="_blank" rel="noreferrer"><Github size={14} />GitHub</a>
+              {data.website && <a className="chip" href={data.website} target="_blank" rel="noreferrer"><Globe size={14} />{data.website.replace(/^https?:\/\//, "")}</a>}
               {data.facebook && <a className="chip" href={data.facebook} target="_blank" rel="noreferrer"><Facebook size={14} />Facebook</a>}
               {data.instagram && <a className="chip" href={data.instagram} target="_blank" rel="noreferrer"><Instagram size={14} />Instagram</a>}
               {data.leetcode && <a className="chip" href={data.leetcode} target="_blank" rel="noreferrer"><LeetCode size={14} />LeetCode</a>}
